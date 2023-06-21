@@ -39,19 +39,30 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
             long contentLength = connection.getContentLengthLong();
             String fileName = fileUrl.getFile();
             fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+            publish("Downloading " + fileName + " (" + contentLength / 1024 / 1024 + " MB)...");
 
             try (InputStream in = connection.getInputStream();
                 FileOutputStream out = new FileOutputStream(fileName)) {
+                    long time = System.currentTimeMillis();
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     int totalBytesRead = 0;
+                    long previousTime = time;
+                    long previousBytesRead = 0;
 
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                         totalBytesRead += bytesRead;
+                        long currentTime = System.currentTimeMillis();
+                        long timeElapsed = currentTime - previousTime;
                         int percent = (int) ((totalBytesRead / (float) contentLength) * 100);
-                        if (percent % 2 == 0) {
-                            publish("Downloaded " + totalBytesRead + " bytes (" + percent + "%)");
+                        if (timeElapsed > 1000) {
+                            long bytesSinceLast = totalBytesRead - previousBytesRead;
+                            double speed = (bytesSinceLast * 1000.0) / timeElapsed / 1024 / 1024;
+                            String speedStr = String.format("%.2f", speed);
+                            publish("Downloaded " + totalBytesRead + " bytes of " + contentLength + " (" + percent + "%), speed: " + speedStr + " MB/s");
+                            previousTime = currentTime;
+                            previousBytesRead = totalBytesRead;
                         }
                     }
                     in.close();
