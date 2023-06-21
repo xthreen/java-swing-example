@@ -14,6 +14,7 @@ public class JobManagerUI extends JFrame {
         if (iters < 1) {
             throw new IllegalArgumentException("iters must be >= 1");
         }
+        outputArea.setText("Queued sleep job...");
         jobManager.addSleepJob(outputArea, job, iters);
     }
 
@@ -24,6 +25,8 @@ public class JobManagerUI extends JFrame {
         if (url == null) {
             throw new IllegalArgumentException("url must be non-null");
         }
+        outputArea.setText("Queued download job...");
+        outputArea.append("\n" + url);
         jobManager.addDownloadJob(outputArea, job, url);
     }
 
@@ -32,7 +35,6 @@ public class JobManagerUI extends JFrame {
     }
 
     private void setBtnDefaults(JButton button) {
-        button.setPreferredSize(new Dimension(100, 30));
         button.setBackground(Color.DARK_GRAY);
         button.setForeground(Color.WHITE);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -46,8 +48,8 @@ public class JobManagerUI extends JFrame {
         if (url == null) {
             throw new IllegalArgumentException("url must be non-null");
         }
-
-        JButton button = new JButton(job + " " + url);
+        JButton button = new JButton("GET: " + url.substring(url.lastIndexOf('/')));
+        button.setPreferredSize(new Dimension(200, 30));
         setBtnDefaults(button);
         button.addActionListener(e -> addDownloadJob(job, url));
         add(button);
@@ -62,6 +64,7 @@ public class JobManagerUI extends JFrame {
         }
 
         JButton button = new JButton(job + " " + iters);
+        button.setPreferredSize(new Dimension(100, 30));
         setBtnDefaults(button);
         button.addActionListener(e -> addSleepJob(job, iters));
         add(button);
@@ -69,11 +72,12 @@ public class JobManagerUI extends JFrame {
 
     public void addJobButtons() {
         addSleepJobButton("sleep", 10);
-        addDownloadJobButton("download", "https://install.copperhead.co/releases/files/panther-factory-2023.05.29.01.zip");
+        addDownloadJobButton("download", "https://dl.google.com/dl/android/aosp/panther-tq3a.230605.012-factory-e1c06028.zip");
     }
 
     public void addExecuteButton() {
         JButton button = new JButton("Execute");
+        button.setPreferredSize(new Dimension(100, 30));
         setBtnDefaults(button);
         button.addActionListener(e -> executeJobs());
         add(button);
