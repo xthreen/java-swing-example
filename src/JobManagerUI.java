@@ -74,11 +74,7 @@ public class JobManagerUI extends JFrame {
 
     public void addExecuteButton() {
         JButton button = new JButton("Execute");
-        button.setPreferredSize(new Dimension(480, 30));
-        button.setBackground(Color.DARK_GRAY);
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.PLAIN, 14));
-        button.setBorder(BorderFactory.createEtchedBorder());
+        setBtnDefaults(button);
         button.addActionListener(e -> executeJobs());
         add(button);
     }
