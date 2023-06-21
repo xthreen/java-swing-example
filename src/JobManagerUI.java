@@ -5,7 +5,7 @@ import java.awt.*;
 public class JobManagerUI extends JFrame {
     private final JobManager jobManager = new JobManager();
 
-    final JTextArea outputArea = new JTextArea(10, 50);
+    final JTextArea outputArea = new JTextArea(2, 48);
 
     public void addSleepJob(String job, int iters) {
         if (job == null) {
@@ -34,12 +34,7 @@ public class JobManagerUI extends JFrame {
         jobManager.executeJobs();
     }
 
-    private void setBtnDefaults(JButton button) {
-        button.setBackground(Color.DARK_GRAY);
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.PLAIN, 14));
-        button.setBorder(BorderFactory.createEtchedBorder());
-    }
+
 
     public void addDownloadJobButton(String job, String url) {
         if (job == null) {
@@ -49,8 +44,8 @@ public class JobManagerUI extends JFrame {
             throw new IllegalArgumentException("url must be non-null");
         }
         JButton button = new JButton("GET: " + url.substring(url.lastIndexOf('/')));
+        setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(200, 30));
-        setBtnDefaults(button);
         button.addActionListener(e -> addDownloadJob(job, url));
         add(button);
     }
@@ -64,8 +59,8 @@ public class JobManagerUI extends JFrame {
         }
 
         JButton button = new JButton(job + " " + iters);
+        setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(100, 30));
-        setBtnDefaults(button);
         button.addActionListener(e -> addSleepJob(job, iters));
         add(button);
     }
@@ -77,23 +72,20 @@ public class JobManagerUI extends JFrame {
 
     public void addExecuteButton() {
         JButton button = new JButton("Execute");
+        setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(100, 30));
-        setBtnDefaults(button);
         button.addActionListener(e -> executeJobs());
         add(button);
     }
 
     public void addOutputTextArea() {
+        setCommonThemeElements(outputArea);
         outputArea.setEditable(false);
-        outputArea.setPreferredSize(new Dimension(480, 200));
-        outputArea.setBackground(Color.BLACK);
-        outputArea.setForeground(Color.WHITE);
-        outputArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        outputArea.setBorder(BorderFactory.createEtchedBorder());
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
         outputArea.setAutoscrolls(true);
-        add(new JScrollPane(outputArea));
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        add(scrollPane);
     }
 
     public void addComponents() {
@@ -102,16 +94,23 @@ public class JobManagerUI extends JFrame {
         addExecuteButton();
     }
 
+    public void setCommonThemeElements(JComponent component) {
+        component.setFont(new Font("Arial", Font.PLAIN, 12));
+        component.setForeground(Color.WHITE);
+        component.setBackground(Color.DARK_GRAY);
+        component.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+    }
+
     public JobManagerUI() {
         super("Job Manager UI");
         ImageIcon logo = new ImageIcon("res/tesseract-logo-houndstoothed-1024x1024-alpha.png");
         this.setLayout(new FlowLayout());
-        this.setPreferredSize(new Dimension(640, 480));
-        this.setSize(new Dimension(640, 480));
+        this.setPreferredSize(new Dimension(640, 146));
+        this.setSize(new Dimension(640, 146));
         this.setIconImage(logo.getImage());
         this.getContentPane().setBackground(Color.DARK_GRAY);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         addComponents();
+        this.pack();
     }
 }
