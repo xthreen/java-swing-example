@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +20,7 @@ public class AdbCommandJob extends SwingWorker<String, String> implements Worker
     protected String doInBackground() {
         try {
             publish("Executing command: " + command);
-            ProcessBuilder pb = new ProcessBuilder("adb", command);
-            pb.redirectErrorStream(true);
-            pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
-            Process p = pb.start();
+            Process p = this.buildProcess();
             try (InputStream in = p.getInputStream();
                     InputStream err = p.getErrorStream()) {
                     byte[] buffer = new byte[4096];
@@ -60,5 +58,12 @@ public class AdbCommandJob extends SwingWorker<String, String> implements Worker
     public void executeJob() {
         this.outputArea.setText("");
         execute();
+    }
+
+    private Process buildProcess() throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("adb", command);
+        pb.redirectErrorStream(true);
+        pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
+        return pb.start();
     }
 }
