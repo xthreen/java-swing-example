@@ -23,8 +23,8 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
             if (isCancelled()) {
                 return "Cancelled";
             }
-            publish("Iteration " + i);
             TimeUnit.SECONDS.sleep(1);
+            publish("Slept for: " + i);
         }
         return "Completed";
     }

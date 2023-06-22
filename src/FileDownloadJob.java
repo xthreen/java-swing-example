@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -5,8 +6,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
 
 public class FileDownloadJob extends SwingWorker<String, String> implements WorkerJob {
     private final JTextArea outputArea;

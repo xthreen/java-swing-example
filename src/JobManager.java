@@ -5,6 +5,10 @@ import java.util.Queue;
 public class JobManager {
     private final Queue<WorkerJob> workerQueue = new LinkedList<>();
 
+    public void addAdbStartJob(JTextArea outputArea) {
+        workerQueue.add(new AdbCommandJob(outputArea, null));
+    }
+
     public void addSleepJob(JTextArea outputArea, String job, int iters) {
         if (job == null) {
             throw new IllegalArgumentException("job must be non-null");
@@ -42,5 +46,9 @@ public class JobManager {
             WorkerJob worker = workerQueue.remove();
             worker.executeJob();
         }
+    }
+
+    public void shutdown(JTextArea outputArea) {
+        new AdbCommandJob(outputArea, "kill-server").executeJob();
     }
 }
