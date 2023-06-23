@@ -33,7 +33,7 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     protected void done() {
         try {
             String result = get();
-            this.processFinalResult(result);
+            outputArea.setText(result + "\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,20 +41,13 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
 
     @Override
     public void process(List<String> chunks) {
-        this.processIntermediateResult(chunks);
-    }
-
-    public void executeJob() {
-        execute();
-    }
-
-    public void processIntermediateResult(List<String> chunks) {
         for (String chunk : chunks) {
             outputArea.setText(chunk + "\n");
         }
     }
 
-    public void processFinalResult(String result) {
-        outputArea.setText(result + "\n");
+    public void executeJob() {
+        outputArea.setText("");
+        execute();
     }
 }
