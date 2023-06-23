@@ -54,6 +54,6 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     }
 
     public void executeJob() {
-        execute();
+        this.execute();
     }
 }
