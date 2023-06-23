@@ -56,8 +56,8 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
                         totalBytesRead += bytesRead;
                         Instant currentTime = Instant.now();
                         long timeElapsed = Duration.between(currentTime, previousTime).abs().toMillis();
-                        int percent = (int) ((totalBytesRead / (float) contentLength) * 100);
                         if (timeElapsed > 1000) {
+                            int percent = (int) (((double) totalBytesRead / (double) contentLength) * 100);
                             long bytesSinceLast = totalBytesRead - previousBytesRead;
                             double speed = (bytesSinceLast * 1000.0) / timeElapsed / 1024 / 1024;
                             String speedStr = String.format("%.2f", speed);
@@ -97,7 +97,6 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
     }
 
     public void executeJob() {
-        outputArea.setText("");
         execute();
     }
 }
