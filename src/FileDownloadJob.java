@@ -41,7 +41,7 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
             long contentLength = connection.getContentLengthLong();
             String fileName = fileUrl.getFile();
             fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
-            publish("Downloading " + fileName + " (" + contentLength / 1024 / 1024 + " MB)...");
+            this.publish("Downloading " + fileName + " (" + contentLength / 1024 / 1024 + " MB)...");
 
             try (InputStream in = connection.getInputStream();
                 FileOutputStream out = new FileOutputStream(fileName)) {
@@ -62,7 +62,7 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
                             long bytesSinceLast = totalBytesRead - previousBytesRead;
                             double speed = (bytesSinceLast * 1000.0) / timeElapsed / 1024 / 1024;
                             String speedStr = String.format("%.2f", speed);
-                            publish("Downloaded " + totalBytesRead + " bytes of " + contentLength + " (" + percent + "%), speed: " + speedStr + " MB/s");
+                            this.publish("Downloaded " + totalBytesRead + " bytes of " + contentLength + " (" + percent + "%), speed: " + speedStr + " MB/s");
                             previousTime = currentTime;
                             previousBytesRead = totalBytesRead;
                         }
@@ -104,6 +104,6 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
     }
 
     public void executeJob() {
-        execute();
+        this.execute();
     }
 }

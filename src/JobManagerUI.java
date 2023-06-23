@@ -51,7 +51,7 @@ public class JobManagerUI extends JFrame {
             }
             jobManager.addDownloadJob(outputArea, url);
         });
-        add(button);
+        this.add(button);
     }
 
     private void addSleepJobButton(int iters) {
@@ -71,7 +71,7 @@ public class JobManagerUI extends JFrame {
             }
             jobManager.addSleepJob(outputArea,  iters);
         });
-        add(button);
+        this.add(button);
     }
 
     private void addAdbStartJobButton() {
@@ -79,7 +79,7 @@ public class JobManagerUI extends JFrame {
         setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(200, 30));
         button.addActionListener(e -> jobManager.addAdbStartJob(outputArea));
-        add(button);
+        this.add(button);
     }
 
     private void addExecuteButton() {
@@ -87,7 +87,7 @@ public class JobManagerUI extends JFrame {
         setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(100, 30));
         button.addActionListener(e -> executeJobs());
-        add(button);
+        this.add(button);
     }
 
     private void addJobButtons() {
@@ -107,7 +107,7 @@ public class JobManagerUI extends JFrame {
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
         JScrollPane scrollPane = new JScrollPane(outputArea);
-        add(scrollPane);
+        this.add(scrollPane);
     }
 
     private void addComponents() {

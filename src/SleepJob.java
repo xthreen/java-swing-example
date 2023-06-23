@@ -25,7 +25,7 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
                 return "Cancelled";
             }
             TimeUnit.SECONDS.sleep(1);
-            publish("Slept for: " + (i + 1) + " seconds");
+            this.publish("Slept for: " + (i + 1) + " seconds");
         }
         return "Completed";
     }
@@ -54,6 +54,6 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     }
 
     public void executeJob() {
-        execute();
+        this.execute();
     }
 }
