@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
@@ -33,7 +34,12 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     protected void done() {
         try {
             String result = get();
-            outputArea.setText(result + "\n");
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            if (!lastOutput.isEmpty()) {
+                outputArea.setText(lastOutput + "\n" + result);
+            } else {
+                outputArea.setText(result);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,7 +48,8 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     @Override
     public void process(List<String> chunks) {
         for (String chunk : chunks) {
-            outputArea.setText(chunk + "\n");
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            outputArea.setText(lastOutput + "\n" + chunk);
         }
     }
 

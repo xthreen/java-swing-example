@@ -2,17 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Objects;
 
 public class JobManagerUI extends JFrame {
     private final JobManager jobManager = new JobManager();
-
-    private final JTextArea outputArea = new JTextArea(12, 50);
+    private final JTextArea outputArea = new JTextArea(12, 48);
 
     public JobManagerUI() {
         super("Job Manager UI");
         ImageIcon logo = new ImageIcon("res/tesseract-logo-houndstoothed-1024x1024-alpha.png");
         this.setLayout(new FlowLayout());
-        this.setPreferredSize(new Dimension(640, 304));
+        this.setPreferredSize(new Dimension(640, 320));
         this.setResizable(false);
         this.setIconImage(logo.getImage());
         this.getContentPane().setBackground(Color.DARK_GRAY);
@@ -43,8 +43,12 @@ public class JobManagerUI extends JFrame {
         setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(200, 30));
         button.addActionListener(e -> {
-            outputArea.setText("Queued download job...");
-            outputArea.append("\n" + url);
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            if (!lastOutput.isEmpty()) {
+                outputArea.setText(lastOutput + "\n" + "Queued download job..." + "\n" + url);
+            } else {
+                outputArea.setText("Queued download job..." + "\n" + url);
+            }
             jobManager.addDownloadJob(outputArea, url);
         });
         add(button);
@@ -59,7 +63,12 @@ public class JobManagerUI extends JFrame {
         setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(100, 30));
         button.addActionListener(e -> {
-            outputArea.setText("Queued sleep job...");
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            if (!lastOutput.isEmpty()) {
+                outputArea.setText(lastOutput + "\n" + "Queued sleep job...");
+            } else {
+                outputArea.setText("Queued sleep job...");
+            }
             jobManager.addSleepJob(outputArea,  iters);
         });
         add(button);
@@ -93,13 +102,10 @@ public class JobManagerUI extends JFrame {
     private void addOutputTextArea() {
         outputArea.setBackground(Color.BLACK);
         outputArea.setForeground(Color.WHITE);
-        outputArea.setPreferredSize(new Dimension(600, 200));
-        outputArea.setSize(new Dimension(600, 200));
         outputArea.setFont(new Font("Arial", Font.PLAIN, 12));
         outputArea.setEditable(false);
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
-        outputArea.setAutoscrolls(true);
         JScrollPane scrollPane = new JScrollPane(outputArea);
         add(scrollPane);
     }

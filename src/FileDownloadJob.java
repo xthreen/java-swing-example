@@ -8,6 +8,7 @@ import java.net.URLConnection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 public class FileDownloadJob extends SwingWorker<String, String> implements WorkerJob {
     private final JTextArea outputArea;
@@ -46,13 +47,13 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
                 FileOutputStream out = new FileOutputStream(fileName)) {
                     Instant startTime = Instant.now();
                     byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    int totalBytesRead = 0;
+                    long bytesRead;
+                    long totalBytesRead = 0;
                     Instant previousTime = startTime;
                     long previousBytesRead = 0;
 
                     while ((bytesRead = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
+                        out.write(buffer, 0, (int) bytesRead);
                         totalBytesRead += bytesRead;
                         Instant currentTime = Instant.now();
                         long timeElapsed = Duration.between(currentTime, previousTime).abs().toMillis();
@@ -83,7 +84,12 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
     public void done() {
         try {
             String result = get();
-            outputArea.setText(result + "\n");
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            if (!lastOutput.isEmpty()) {
+                outputArea.setText(lastOutput + "\n" + result);
+            } else {
+                outputArea.setText(result);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,7 +98,8 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
     @Override
     public void process(List<String> chunks) {
         for (String chunk : chunks) {
-            outputArea.setText(chunk + "\n");
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            outputArea.setText(lastOutput + "\n" + chunk);
         }
     }
 

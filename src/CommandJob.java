@@ -46,7 +46,8 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     @Override
     protected void process(List<String> chunks) {
         for (String chunk : chunks) {
-            outputArea.append(chunk + "\n");
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            outputArea.setText(lastOutput + "\n" + chunk);
         }
     }
 
@@ -54,14 +55,18 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     protected void done() {
         try {
             String result = get();
-            outputArea.append(result);
+            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
+            if (!lastOutput.isEmpty()) {
+                outputArea.setText(lastOutput + "\n" + result);
+            } else {
+                outputArea.setText(result);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void executeJob() {
-        this.outputArea.setText("");
         execute();
     }
 
