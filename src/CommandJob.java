@@ -21,17 +21,17 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     @Override
     protected String doInBackground() {
         try {
-            publish("Executing command: " + Arrays.toString(command).replaceAll("[\\[\\]]", ""));
+            this.publish("Executing command: " + Arrays.toString(command).replaceAll("[\\[\\]]", ""));
             Process p = this.buildProcess();
             try (InputStream in = p.getInputStream();
                     InputStream err = p.getErrorStream()) {
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
-                        publish(new String(buffer, 0, bytesRead));
+                        this.publish(new String(buffer, 0, bytesRead));
                     }
                     while ((bytesRead = err.read(buffer)) != -1) {
-                        publish(new String(buffer, 0, bytesRead));
+                        this.publish(new String(buffer, 0, bytesRead));
                     }
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Invalid input: " + e);
@@ -67,7 +67,7 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     }
 
     public void executeJob() {
-        execute();
+        this.execute();
     }
 
     private Process buildProcess() throws IOException {
