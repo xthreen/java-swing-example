@@ -19,12 +19,12 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
 
     @Override
     protected String doInBackground() throws Exception {
-        for (int i = 0; i < iters; i++) {
+        for (int i = 0; i <= iters; i++) {
             if (isCancelled()) {
                 return "Cancelled";
             }
             TimeUnit.SECONDS.sleep(1);
-            publish("Slept for: " + i);
+            publish("Slept for: " + (i + 1) + " seconds");
         }
         return "Completed";
     }

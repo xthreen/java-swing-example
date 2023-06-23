@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 public class FileDownloadJob extends SwingWorker<String, String> implements WorkerJob {
@@ -42,18 +44,18 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
 
             try (InputStream in = connection.getInputStream();
                 FileOutputStream out = new FileOutputStream(fileName)) {
-                    long time = System.currentTimeMillis();
+                    Instant startTime = Instant.now();
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     int totalBytesRead = 0;
-                    long previousTime = time;
+                    Instant previousTime = startTime;
                     long previousBytesRead = 0;
 
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                         totalBytesRead += bytesRead;
-                        long currentTime = System.currentTimeMillis();
-                        long timeElapsed = currentTime - previousTime;
+                        Instant currentTime = Instant.now();
+                        long timeElapsed = Duration.between(currentTime, previousTime).abs().toMillis();
                         int percent = (int) ((totalBytesRead / (float) contentLength) * 100);
                         if (timeElapsed > 1000) {
                             long bytesSinceLast = totalBytesRead - previousBytesRead;

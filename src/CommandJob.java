@@ -1,25 +1,27 @@
 import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class AdbCommandJob extends SwingWorker<String, String> implements WorkerJob {
+public class CommandJob extends SwingWorker<String, String> implements WorkerJob {
     private final JTextArea outputArea;
-    private final String command;
+    private final String[] command;
 
-    public AdbCommandJob(JTextArea outputArea, String command) {
+    public CommandJob(JTextArea outputArea, String[] command) {
         if (outputArea == null) {
             throw new IllegalArgumentException("outputArea must be non-null");
         }
         this.outputArea = outputArea;
-        this.command = Objects.requireNonNullElse(command, "devices");
+        this.command = Objects.requireNonNullElse(command, new String[] {"adb", "devices", "-l"});
     }
+
     @Override
     protected String doInBackground() {
         try {
-            publish("Executing command: " + command);
+            publish("Executing command: " + Arrays.toString(command).replaceAll("[\\[\\]]", ""));
             Process p = this.buildProcess();
             try (InputStream in = p.getInputStream();
                     InputStream err = p.getErrorStream()) {
@@ -35,17 +37,19 @@ public class AdbCommandJob extends SwingWorker<String, String> implements Worker
                     throw new IllegalArgumentException("Invalid input: " + e);
                 }
             p.waitFor(10, TimeUnit.SECONDS);
-            return "Completed";
+            return "Command process completed.";
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid input: " + e);
         }
     }
+
     @Override
-    public void process(List<String> chunks) {
+    protected void process(List<String> chunks) {
         for (String chunk : chunks) {
             outputArea.append(chunk + "\n");
         }
     }
+
     @Override
     protected void done() {
         try {
@@ -55,13 +59,14 @@ public class AdbCommandJob extends SwingWorker<String, String> implements Worker
             e.printStackTrace();
         }
     }
+
     public void executeJob() {
         this.outputArea.setText("");
         execute();
     }
 
     private Process buildProcess() throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("adb", command);
+        ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
         return pb.start();
