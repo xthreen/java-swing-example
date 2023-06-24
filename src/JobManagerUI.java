@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public class JobManagerUI extends JFrame {
     private final JobManager jobManager = new JobManager();
+    private boolean adbDaemonQueued = false;
+    private boolean adbDaemon = false;
     private final JTextArea outputArea = new JTextArea(12, 48);
 
     public JobManagerUI() {
@@ -19,12 +21,16 @@ public class JobManagerUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                try {
-                    jobManager.shutdown(outputArea);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                if (adbDaemon) {
+                    try {
+                        jobManager.shutdown(outputArea);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    System.exit(0);
+                } else {
+                    System.exit(0);
                 }
-                System.exit(0);
             }
         });
         addComponents();
@@ -78,7 +84,7 @@ public class JobManagerUI extends JFrame {
         JButton button = new JButton("adb devices");
         setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(200, 30));
-        button.addActionListener(e -> jobManager.addAdbStartJob(outputArea));
+        button.addActionListener(e -> this.adbDaemonQueued = jobManager.addAdbStartJob(outputArea));
         this.add(button);
     }
 
@@ -86,7 +92,15 @@ public class JobManagerUI extends JFrame {
         JButton button = new JButton("Execute");
         setCommonThemeElements(button);
         button.setPreferredSize(new Dimension(100, 30));
-        button.addActionListener(e -> executeJobs());
+        button.addActionListener(e -> {
+            if (adbDaemonQueued) {
+                adbDaemon = true;
+                adbDaemonQueued = false;
+                executeJobs();
+            } else {
+                executeJobs();
+            }
+        });
         this.add(button);
     }
 

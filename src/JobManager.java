@@ -5,8 +5,13 @@ import java.util.Queue;
 public class JobManager {
     private final Queue<WorkerJob> workerQueue = new LinkedList<>();
 
-    protected void addAdbStartJob(JTextArea outputArea) {
-        workerQueue.add(new CommandJob(outputArea, new String[] { "adb", "devices", "-l" }));
+    protected boolean addAdbStartJob(JTextArea outputArea) {
+        try {
+            workerQueue.add(new CommandJob(outputArea, new String[] { "adb", "devices", "-l" }));
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     protected void addSleepJob(JTextArea outputArea, int iters) {
