@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -8,10 +9,11 @@ public class JobManagerUI extends JFrame {
     private final JobManager jobManager = new JobManager();
     private boolean adbDaemonQueued = false;
     private boolean adbDaemon = false;
-    private final JTextArea outputArea = new JTextArea(12, 48);
+    private final JTextArea outputArea = new JTextArea(12, 54);
 
     public JobManagerUI() {
         super("Job Manager UI");
+        outputArea.setText("Welcome to the Job Manager UI!\nPlease select a job to execute.\nResults will appear here...");
         ImageIcon logo = new ImageIcon("res/tesseract-logo-houndstoothed-1024x1024-alpha.png");
         this.setLayout(new FlowLayout());
         this.setPreferredSize(new Dimension(640, 320));
@@ -114,13 +116,21 @@ public class JobManagerUI extends JFrame {
     }
 
     private void addOutputTextArea() {
-        outputArea.setBackground(Color.BLACK);
+        outputArea.setBackground(Color.DARK_GRAY);
         outputArea.setForeground(Color.WHITE);
         outputArea.setFont(new Font("Arial", Font.PLAIN, 12));
         outputArea.setEditable(false);
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
+
+        TitledBorder border = BorderFactory.createTitledBorder("Output");
+        border.setBorder(BorderFactory.createEtchedBorder());
+        border.setTitleColor(Color.LIGHT_GRAY);
+        border.setTitleFont(new Font("Arial", Font.BOLD, 14));
         JScrollPane scrollPane = new JScrollPane(outputArea);
+        scrollPane.setBorder(border);
+        scrollPane.setBackground(Color.DARK_GRAY);
+        scrollPane.setForeground(Color.WHITE);
         this.add(scrollPane);
     }
 
@@ -133,6 +143,6 @@ public class JobManagerUI extends JFrame {
         component.setFont(new Font("Arial", Font.PLAIN, 12));
         component.setForeground(Color.WHITE);
         component.setBackground(Color.DARK_GRAY);
-        component.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        component.setBorder(BorderFactory.createEtchedBorder());
     }
 }
