@@ -3,15 +3,20 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class JobManager {
-    private final Queue<WorkerJob> workerQueue = new LinkedList<>();
+    private final Queue<SwingWorker<String, String>> workerQueue = new LinkedList<>();
 
-    protected boolean addAdbStartJob(JTextArea outputArea) {
+    protected boolean addCommandJob(JTextArea outputArea, String[] command) {
         try {
-            workerQueue.add(new CommandJob(outputArea, new String[] { "adb", "devices", "-l" }));
+            AllowedCommand allowedCommand = AllowedCommand.tryCommand(command);
+            workerQueue.add(new CommandJob(outputArea, allowedCommand));
         } catch (Exception e) {
             return false;
         }
         return true;
+    }
+
+    protected boolean addAdbStartJob(JTextArea outputArea) {
+        return addCommandJob(outputArea, AllowedCommand.ADB_START_SERVER.getCommand());
     }
 
     protected void addSleepJob(JTextArea outputArea, int iters) {
@@ -30,12 +35,12 @@ public class JobManager {
 
     protected void executeJobs() {
         while (!workerQueue.isEmpty()) {
-            WorkerJob worker = workerQueue.remove();
-            worker.executeJob();
+            SwingWorker<String, String> worker = workerQueue.remove();
+            worker.execute();
         }
     }
 
     protected void shutdown(JTextArea outputArea) {
-        new CommandJob(outputArea, new String[] { "adb", "kill-server" }).executeJob();
+        new CommandJob(outputArea, AllowedCommand.ADB_KILL_SERVER).execute();
     }
 }

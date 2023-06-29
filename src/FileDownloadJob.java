@@ -8,9 +8,8 @@ import java.net.URLConnection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
-public class FileDownloadJob extends SwingWorker<String, String> implements WorkerJob {
+public class FileDownloadJob extends SwingWorker<String, String> {
     private final JTextArea outputArea;
     private final URL fileUrl;
 
@@ -25,14 +24,6 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
         this.fileUrl = createUrl(fileUrl);
     }
 
-    private URL createUrl(String fileUrl) {
-        try {
-            return URI.create(fileUrl).toURL();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid URL: " + fileUrl, e);
-        }
-    }
-
     @Override
     protected String doInBackground() {
         try {
@@ -41,7 +32,7 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
             long contentLength = connection.getContentLengthLong();
             String fileName = fileUrl.getFile();
             fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
-            this.publish("Downloading " + fileName + " (" + contentLength / 1024 / 1024 + " MB)...");
+            this.publish("\n" + "Downloading " + fileName + " (" + contentLength / 1024 / 1024 + " MB)...");
 
             try (InputStream in = connection.getInputStream();
                 FileOutputStream out = new FileOutputStream(fileName)) {
@@ -81,29 +72,27 @@ public class FileDownloadJob extends SwingWorker<String, String> implements Work
     }
 
     @Override
+    public void process(List<String> chunks) {
+        for (String chunk : chunks) {
+            outputArea.append(chunk + "\n");
+        }
+    }
+
+    @Override
     public void done() {
         try {
             String result = get();
-            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
-            if (!lastOutput.isEmpty()) {
-                outputArea.setText(lastOutput + "\n" + result);
-            } else {
-                outputArea.setText(result);
-            }
+            outputArea.append(result + "\n");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void process(List<String> chunks) {
-        for (String chunk : chunks) {
-            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
-            outputArea.setText(lastOutput + "\n" + chunk);
+    private URL createUrl(String fileUrl) {
+        try {
+            return URI.create(fileUrl).toURL();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid URL: " + fileUrl, e);
         }
-    }
-
-    public void executeJob() {
-        this.execute();
     }
 }

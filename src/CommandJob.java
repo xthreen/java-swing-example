@@ -3,25 +3,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class CommandJob extends SwingWorker<String, String> implements WorkerJob {
+public class CommandJob extends SwingWorker<String, String> {
     private final JTextArea outputArea;
-    private final String[] command;
+    private final AllowedCommand command;
 
-    public CommandJob(JTextArea outputArea, String[] command) {
+    public CommandJob(JTextArea outputArea, AllowedCommand command) {
         if (outputArea == null) {
             throw new IllegalArgumentException("outputArea must be non-null");
         }
         this.outputArea = outputArea;
-        this.command = Objects.requireNonNullElse(command, new String[] {"adb", "devices", "-l"});
+        this.command = command;
     }
 
     @Override
     protected String doInBackground() {
         try {
-            this.publish("Executing command: " + Arrays.toString(command).replaceAll("[\\[\\]]", ""));
+            this.publish("\n" + "Executing command: " + Arrays.toString(command.getCommand()).replaceAll("[\\[\\]]", ""));
             Process p = this.buildProcess();
             try (InputStream in = p.getInputStream();
                     InputStream err = p.getErrorStream()) {
@@ -46,8 +45,7 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     @Override
     protected void process(List<String> chunks) {
         for (String chunk : chunks) {
-            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
-            outputArea.setText(lastOutput + "\n" + chunk);
+            outputArea.append("\n" + chunk);
         }
     }
 
@@ -55,23 +53,14 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     protected void done() {
         try {
             String result = get();
-            String lastOutput = Objects.requireNonNullElse(outputArea.getText(), "");
-            if (!lastOutput.isEmpty()) {
-                outputArea.setText(lastOutput + "\n" + result);
-            } else {
-                outputArea.setText(result);
-            }
+            outputArea.append("\n" + result);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void executeJob() {
-        this.execute();
-    }
-
     private Process buildProcess() throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(command);
+        ProcessBuilder pb = new ProcessBuilder(command.getCommand());
         pb.redirectErrorStream(true);
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
         return pb.start();
