@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class CommandJob extends SwingWorker<String, String> {
+public class CommandJob extends SwingWorker<String, String> implements WorkerJob {
     private final JTextArea outputArea;
     private final AllowedCommand command;
 
@@ -22,23 +22,20 @@ public class CommandJob extends SwingWorker<String, String> {
         try {
             this.publish("\n" + "Executing command: " + Arrays.toString(command.getCommand()).replaceAll("[\\[\\]]", ""));
             Process p = this.buildProcess();
-            try (InputStream in = p.getInputStream();
-                    InputStream err = p.getErrorStream()) {
+            try (InputStream in = p.getInputStream()) {
                     byte[] buffer = new byte[4096];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         this.publish(new String(buffer, 0, bytesRead));
                     }
-                    while ((bytesRead = err.read(buffer)) != -1) {
-                        this.publish(new String(buffer, 0, bytesRead));
-                    }
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("Invalid input: " + e);
+                    throw new Exception(e);
                 }
             p.waitFor(10, TimeUnit.SECONDS);
             return "Command process completed.";
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid input: " + e);
+            e.printStackTrace();
+            return "Command process failed: " + e.getMessage();
         }
     }
 
@@ -57,6 +54,10 @@ public class CommandJob extends SwingWorker<String, String> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void executeJob() {
+        this.execute();
     }
 
     private Process buildProcess() throws IOException {

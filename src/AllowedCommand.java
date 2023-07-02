@@ -1,6 +1,10 @@
 import java.util.Arrays;
 
 public enum AllowedCommand {
+    WHICH_ADB("which", "adb"),
+    WHICH_FASTBOOT("which", "fastboot"),
+    WHERE_ADB("where", "adb"),
+    WHERE_FASTBOOT("where", "fastboot"),
     ADB_START_SERVER("adb", "start-server"),
     ADB_DEVICES("adb", "devices", "-l"),
     ADB_KILL_SERVER("adb", "kill-server"),

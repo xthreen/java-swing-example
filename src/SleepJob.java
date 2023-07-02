@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SleepJob extends SwingWorker<String, String> {
+public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     private final JTextArea outputArea;
     private final int iters;
 
@@ -44,5 +44,9 @@ public class SleepJob extends SwingWorker<String, String> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void executeJob() {
+        this.execute();
     }
 }

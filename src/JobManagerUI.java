@@ -1,28 +1,36 @@
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.net.URL;
 
 public class JobManagerUI extends JPanel {
     private final JobManager jobManager;
     private final JTextArea outputArea;
-    private boolean adbDaemonQueued = false;
-    private boolean adbDaemon = false;
-    Font bodyFont = new Font("Fira Sans", Font.PLAIN, 12);
-    Font headerFont = new Font("Big Shoulders Text", Font.BOLD, 14);
+    private final InputArea inputArea;
+    private static boolean adbDaemon = false;
+    public boolean adbDaemonQueued = false;
 
     public JobManagerUI(JTextArea outputArea, JobManager jobManager) {
         super(new FlowLayout());
-        ThemeUtils.setCommonThemeElements(this);
-
+        Utils.setCommonBodyProperties(this);
         this.outputArea = outputArea;
         this.jobManager = jobManager;
+        this.inputArea = new InputArea(this, jobManager, outputArea);
 
-        outputArea.setText("Welcome to the Job Manager UI!\nPlease select a job to execute.\nResults will appear here...\n");
+        outputArea.setText(
+                "Welcome to the Swing Concurrency Demo UI!\nPlease select a job to execute, or type a command.\nResults will appear here...\n"
+        );
         addComponents();
-
     }
 
-    public boolean isAdbDaemonRunning() {
+    public void requestFocusOnInputArea() {
+        inputArea.requestFocusInWindow();
+    }
+
+    public static void setAdbDaemonStatus(boolean status) {
+        adbDaemon = status;
+    }
+
+    public boolean getAdbDaemonStatus() {
         return adbDaemon;
     }
 
@@ -34,13 +42,14 @@ public class JobManagerUI extends JPanel {
         if (url == null) {
             throw new IllegalArgumentException("url must be non-null");
         }
-        JButton button = new JButton("GET: " + url.substring(url.lastIndexOf('/')));
-        ThemeUtils.setCommonThemeElements(button);
+        URL urlObj = Utils.createUrl(url);
+        JButton button = new JButton("GET: " + Utils.capitalize(Utils.extractDeviceName(url)));
+        Utils.setCommonBodyProperties(button);
         button.setPreferredSize(new Dimension(200, 30));
         button.addActionListener(e -> {
             outputArea.append("\n" + "Queued download job..." + "\n" + url + "\n");
 
-            jobManager.addDownloadJob(outputArea, url);
+            jobManager.addDownloadJob(Utils.newProgressBar(this), outputArea, urlObj);
         });
         this.add(button);
     }
@@ -50,8 +59,8 @@ public class JobManagerUI extends JPanel {
             throw new IllegalArgumentException("iters must be >= 1");
         }
 
-        JButton button = new JButton("sleep " + iters);
-        ThemeUtils.setCommonThemeElements(button);
+        JButton button = new JButton("Sleep " + iters);
+        Utils.setCommonBodyProperties(button);
         button.setPreferredSize(new Dimension(100, 30));
         button.addActionListener(e -> {
             outputArea.append("Queued sleep for " + iters + " seconds..." + "\n");
@@ -62,7 +71,7 @@ public class JobManagerUI extends JPanel {
 
     private void addAdbStartJobButton() {
         JButton button = new JButton("adb start-server");
-        ThemeUtils.setCommonThemeElements(button);
+        Utils.setCommonBodyProperties(button);
         button.setPreferredSize(new Dimension(200, 30));
         button.addActionListener(e -> this.adbDaemonQueued = jobManager.addAdbStartJob(outputArea));
         this.add(button);
@@ -70,7 +79,7 @@ public class JobManagerUI extends JPanel {
 
     private void addAdbDevicesJobButton() {
         JButton button = new JButton("adb devices");
-        ThemeUtils.setCommonThemeElements(button);
+        Utils.setCommonBodyProperties(button);
         button.setPreferredSize(new Dimension(200, 30));
         button.addActionListener(e -> this.adbDaemonQueued = jobManager.addCommandJob(outputArea, AllowedCommand.ADB_DEVICES.getCommand()));
         this.add(button);
@@ -78,7 +87,7 @@ public class JobManagerUI extends JPanel {
 
     private void addExecuteButton() {
         JButton button = new JButton("Execute");
-        ThemeUtils.setCommonThemeElements(button);
+        Utils.setCommonBodyProperties(button);
         button.setPreferredSize(new Dimension(100, 30));
         button.addActionListener(e -> {
             if (adbDaemonQueued) {
@@ -102,27 +111,26 @@ public class JobManagerUI extends JPanel {
         addExecuteButton();
     }
 
-    private void addOutputTextArea() {
-        outputArea.setBackground(Color.DARK_GRAY);
-        outputArea.setForeground(Color.WHITE);
-        outputArea.setFont(bodyFont);
+    private void addOutputComponents() {
+        outputArea.setBackground(Color.BLACK);
+        outputArea.setForeground(Color.GREEN);
+        outputArea.setFont(Utils.BODY_FONT);
+        outputArea.setFocusable(false);
         outputArea.setEditable(false);
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
 
-        TitledBorder border = BorderFactory.createTitledBorder("Output");
-        border.setBorder(BorderFactory.createEtchedBorder());
-        border.setTitleColor(Color.LIGHT_GRAY);
-        border.setTitleFont(headerFont);
         JScrollPane scrollPane = new JScrollPane(outputArea);
-        scrollPane.setBorder(border);
-        scrollPane.setBackground(Color.DARK_GRAY);
+        scrollPane.setBorder(Utils.newTitledBorder("Output"));
+        scrollPane.setBackground(Color.BLACK);
         scrollPane.setForeground(Color.WHITE);
+
         this.add(scrollPane);
     }
 
     private void addComponents() {
-        addOutputTextArea();
+        addOutputComponents();
         addJobButtons();
+        this.add(inputArea);
     }
 }

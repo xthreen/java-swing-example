@@ -1,9 +1,10 @@
 import javax.swing.*;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class JobManager {
-    private final Queue<SwingWorker<String, String>> workerQueue = new LinkedList<>();
+    private final Queue<WorkerJob> workerQueue = new LinkedList<>();
 
     protected boolean addCommandJob(JTextArea outputArea, String[] command) {
         try {
@@ -14,9 +15,17 @@ public class JobManager {
         }
         return true;
     }
+    protected boolean addCommandJob(JTextArea outputArea, AllowedCommand command) {
+        try {
+            workerQueue.add(new CommandJob(outputArea, command));
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 
     protected boolean addAdbStartJob(JTextArea outputArea) {
-        return addCommandJob(outputArea, AllowedCommand.ADB_START_SERVER.getCommand());
+        return addCommandJob(outputArea, AllowedCommand.ADB_START_SERVER);
     }
 
     protected void addSleepJob(JTextArea outputArea, int iters) {
@@ -26,17 +35,17 @@ public class JobManager {
         workerQueue.add(new SleepJob(outputArea, iters));
     }
 
-    protected void addDownloadJob(JTextArea outputArea, String url) {
+    protected void addDownloadJob(JProgressBar progressBar, JTextArea outputArea, URL url) {
         if (url == null) {
             throw new IllegalArgumentException("url must be non-null");
         }
-        workerQueue.add(new FileDownloadJob(outputArea, url));
+        workerQueue.add(new FileDownloadJob(progressBar, outputArea, url));
     }
 
     protected void executeJobs() {
         while (!workerQueue.isEmpty()) {
-            SwingWorker<String, String> worker = workerQueue.remove();
-            worker.execute();
+            WorkerJob worker = workerQueue.remove();
+            worker.executeJob();
         }
     }
 
