@@ -52,15 +52,19 @@ public class App {
         }
         catch (UnsupportedLookAndFeelException e) {
             System.out.println("Unable to set system look and feel");
+            System.exit(1);
         }
         catch (ClassNotFoundException e) {
             System.out.println("Unable to find class for system look and feel");
+            System.exit(1);
         }
         catch (InstantiationException e) {
             System.out.println("Unable to instantiate system look and feel");
+            System.exit(1);
         }
         catch (IllegalAccessException e) {
             System.out.println("Unable to access system look and feel");
+            System.exit(1);
         }
         SwingUtilities.invokeLater(() -> new App().show());
     }
