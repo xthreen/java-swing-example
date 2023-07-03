@@ -101,6 +101,7 @@ public class FileDownloadJob extends SwingWorker<String, DownloadProgress> imple
             progressBar.setValue(chunk.getPercent());
             outputArea.append(String.format("Downloaded %d/%d MB (%d%%) of %s at %.1f MB/s\n",
                     totalMbRead, totalMbLength, chunk.getPercent(), chunk.getFileName(), chunk.getSpeed()));
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
         }
     }
 

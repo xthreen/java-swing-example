@@ -1,9 +1,10 @@
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 import java.net.URL;
 
-public class InputArea extends JTextArea {
+public class InputArea extends JTextField {
     private final JobManager jobManager;
     private final JTextArea outputArea;
     private final JComponent parentComponent;
@@ -20,8 +21,8 @@ public class InputArea extends JTextArea {
         }
         this.outputArea = outputArea;
         Utils.setCommonBodyProperties(this);
-        this.setRows(1);
         this.setColumns(54);
+        this.setPreferredSize(new Dimension(600, 48));
         this.setBorder(Utils.newTitledBorder("Input"));
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -41,7 +42,7 @@ public class InputArea extends JTextArea {
                                 outputArea.append("Invalid command: " + ex.getMessage() + "\n");
                             }
                         }
-                        case "fastboot" -> {
+                        case "fastboot", "which", "where" -> {
                             try {
                                 AllowedCommand command = AllowedCommand.tryCommand(text);
                                 executeCommand(command);
@@ -58,14 +59,14 @@ public class InputArea extends JTextArea {
     }
 
     public void executeCommand(AllowedCommand command) {
-        setText("");
+        this.setText("");
         this.jobManager.addCommandJob(outputArea, command);
         this.jobManager.executeJobs();
     }
 
     public void executeSleep() {
         String iters = this.getText().matches("sleep\\s+(\\d+)") ? this.getText().split(" ")[1] : this.getText();
-        setText("");
+        this.setText("");
         this.jobManager.addSleepJob(outputArea, Integer.parseInt(iters));
         this.jobManager.executeJobs();
     }

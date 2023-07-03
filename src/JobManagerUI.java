@@ -11,14 +11,16 @@ public class JobManagerUI extends JPanel {
 
     public JobManagerUI(JTextArea outputArea, JobManager jobManager) {
         super(new FlowLayout());
+        this.setPreferredSize(new Dimension(600, 460));
         Utils.setCommonBodyProperties(this);
         this.outputArea = outputArea;
         this.jobManager = jobManager;
         this.inputArea = new InputArea(this, jobManager, outputArea);
 
-        outputArea.setText(
+        this.outputArea.setText(
                 "Welcome to the Swing Concurrency Demo UI!\nPlease select a job to execute, or type a command.\nResults will appear here...\n"
         );
+
         addComponents();
     }
 
@@ -113,17 +115,18 @@ public class JobManagerUI extends JPanel {
 
     private void addOutputComponents() {
         outputArea.setBackground(Color.BLACK);
-        outputArea.setForeground(Color.GREEN);
+        outputArea.setForeground(Utils.LIGHT_GREEN);
         outputArea.setFont(Utils.BODY_FONT);
         outputArea.setFocusable(false);
         outputArea.setEditable(false);
         outputArea.setLineWrap(true);
         outputArea.setWrapStyleWord(true);
+        outputArea.setAutoscrolls(true);
 
         JScrollPane scrollPane = new JScrollPane(outputArea);
+        scrollPane.setAutoscrolls(true);
         scrollPane.setBorder(Utils.newTitledBorder("Output"));
         scrollPane.setBackground(Color.BLACK);
-        scrollPane.setForeground(Color.WHITE);
 
         this.add(scrollPane);
     }

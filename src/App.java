@@ -8,16 +8,19 @@ public class App {
     private final JTextArea outputArea = new JTextArea(12, 54);
     private final JFrame frame = new JFrame();
 
-    App(String hostOs) {
-        frame.setTitle(Utils.capitalize(hostOs) + " Swing Concurrency Demo");
-        frame.setPreferredSize(new Dimension(640, 400));
+    App() {
+        frame.setTitle(Utils.capitalize(Utils.HOST_OS) + " Swing Concurrency Demo");
+        frame.setPreferredSize(new Dimension(720, 540));
         frame.setResizable(false);
         ImageIcon logo = new ImageIcon("res/x3n-tesseract-1024x1024-alpha.png");
         frame.setIconImage(logo.getImage());
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         JobManagerUI jobManagerUI = new JobManagerUI(outputArea, jobManager);
-        frame.add(jobManagerUI);
+        JScrollPane mainScrollPane = new JScrollPane(jobManagerUI);
+        mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        frame.add(mainScrollPane);
 
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -33,6 +36,7 @@ public class App {
                 }
             }
         });
+        SwingUtilities.updateComponentTreeUI(frame);
         frame.pack();
         jobManagerUI.requestFocusOnInputArea();
         frame.setVisible(true);
@@ -58,7 +62,6 @@ public class App {
         catch (IllegalAccessException e) {
             System.out.println("Unable to access system look and feel");
         }
-        String hostOs = System.getProperty("os.name").toLowerCase();
-        SwingUtilities.invokeLater(() -> new App(hostOs).show());
+        SwingUtilities.invokeLater(() -> new App().show());
     }
 }
