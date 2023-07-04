@@ -43,6 +43,7 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
     protected void process(List<String> chunks) {
         for (String chunk : chunks) {
             outputArea.append("\n" + chunk);
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
         }
     }
 
@@ -51,6 +52,7 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
         try {
             String result = get();
             outputArea.append("\n" + result);
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
         } catch (Exception e) {
             e.printStackTrace();
         }

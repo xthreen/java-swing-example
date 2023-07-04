@@ -110,6 +110,7 @@ public class FileDownloadJob extends SwingWorker<String, DownloadProgress> imple
         try {
             String result = get();
             outputArea.append(result + "\n");
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
             progressBar.setVisible(false);
         } catch (Exception e) {
             e.printStackTrace();

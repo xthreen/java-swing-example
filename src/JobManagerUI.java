@@ -50,7 +50,7 @@ public class JobManagerUI extends JPanel {
         button.setPreferredSize(new Dimension(200, 30));
         button.addActionListener(e -> {
             outputArea.append("\n" + "Queued download job..." + "\n" + url + "\n");
-
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
             jobManager.addDownloadJob(Utils.newProgressBar(this), outputArea, urlObj);
         });
         this.add(button);
@@ -66,6 +66,7 @@ public class JobManagerUI extends JPanel {
         button.setPreferredSize(new Dimension(100, 30));
         button.addActionListener(e -> {
             outputArea.append("Queued sleep for " + iters + " seconds..." + "\n");
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
             jobManager.addSleepJob(outputArea,  iters);
         });
         this.add(button);

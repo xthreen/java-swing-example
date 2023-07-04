@@ -23,8 +23,9 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
             if (isCancelled()) {
                 return "Cancelled";
             }
-            TimeUnit.SECONDS.sleep(1);
             this.publish("Slept for: " + (i) + " seconds");
+
+            TimeUnit.SECONDS.sleep(1);
         }
         return "Completed";
     }
@@ -33,6 +34,7 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
     public void process(List<String> chunks) {
         for (String chunk : chunks) {
             outputArea.append(chunk + "\n");
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
         }
     }
 
@@ -41,6 +43,7 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
         try {
             String result = get();
             outputArea.append(result + "\n");
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
         } catch (Exception e) {
             e.printStackTrace();
         }
