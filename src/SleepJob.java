@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
+    private static final Logger logger = Logger.getLogger(FileDownloadJob.class.getName());
     private final JTextArea outputArea;
     private final int iters;
 
@@ -45,7 +47,7 @@ public class SleepJob extends SwingWorker<String, String> implements WorkerJob {
             outputArea.append(result + "\n");
             outputArea.setCaretPosition(outputArea.getDocument().getLength());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Utils.LOG_LEVEL, e.getMessage(), e);
         }
     }
 

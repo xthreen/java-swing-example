@@ -4,8 +4,10 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class CommandJob extends SwingWorker<String, String> implements WorkerJob {
+    private static final Logger logger = Logger.getLogger(FileDownloadJob.class.getName());
     private final JTextArea outputArea;
     private final AllowedCommand command;
 
@@ -34,7 +36,7 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
             p.waitFor(10, TimeUnit.SECONDS);
             return "Command process completed.";
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Utils.LOG_LEVEL, e.getMessage(), e);
             return "Command process failed: " + e.getMessage();
         }
     }
@@ -54,7 +56,7 @@ public class CommandJob extends SwingWorker<String, String> implements WorkerJob
             outputArea.append("\n" + result);
             outputArea.setCaretPosition(outputArea.getDocument().getLength());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Utils.LOG_LEVEL, e.getMessage(), e);
         }
     }
 

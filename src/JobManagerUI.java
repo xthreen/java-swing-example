@@ -115,7 +115,7 @@ public class JobManagerUI extends JPanel {
     }
 
     private void addOutputComponents() {
-        outputArea.setBackground(Color.BLACK);
+        outputArea.setBackground(Utils.BG_DARK_GRAY);
         outputArea.setForeground(Utils.LIGHT_GREEN);
         outputArea.setFont(Utils.BODY_FONT);
         outputArea.setFocusable(false);
@@ -127,7 +127,7 @@ public class JobManagerUI extends JPanel {
         JScrollPane scrollPane = new JScrollPane(outputArea);
         scrollPane.setAutoscrolls(true);
         scrollPane.setBorder(Utils.newTitledBorder("Output"));
-        scrollPane.setBackground(Color.BLACK);
+        scrollPane.setBackground(Utils.BG_DARK_GRAY);
 
         this.add(scrollPane);
     }

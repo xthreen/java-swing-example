@@ -9,8 +9,10 @@ import java.net.URLConnection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class FileDownloadJob extends SwingWorker<String, DownloadProgress> implements WorkerJob {
+    private static final Logger logger = Logger.getLogger(FileDownloadJob.class.getName());
     private final JProgressBar progressBar;
     private final JTextArea outputArea;
     private final URL fileUrl;
@@ -58,7 +60,7 @@ public class FileDownloadJob extends SwingWorker<String, DownloadProgress> imple
             try (InputStream in = connection.getInputStream();
                  FileOutputStream out = new FileOutputStream(fileName)) {
                 Instant startTime = Instant.now();
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[16384];
                 long bytesRead;
                 long totalBytesRead = 0;
                 Instant previousTime = startTime;
@@ -84,11 +86,11 @@ public class FileDownloadJob extends SwingWorker<String, DownloadProgress> imple
                 out.close();
                 return "Completed download of " + fileName + ".";
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Utils.LOG_LEVEL, "Stream operation threw IOException: " + e.getMessage(), e);
                 return "Stream operation threw IOException: " + e.getMessage();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Utils.LOG_LEVEL, "Initial operation threw IOException: " + e.getMessage(), e);
             return "Initial operation threw IOException: " + e.getMessage();
         }
     }
@@ -113,7 +115,7 @@ public class FileDownloadJob extends SwingWorker<String, DownloadProgress> imple
             outputArea.setCaretPosition(outputArea.getDocument().getLength());
             progressBar.setVisible(false);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Utils.LOG_LEVEL, e.getMessage(), e);
         }
     }
 

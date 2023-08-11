@@ -3,6 +3,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.logging.Level;
 
 public class Utils {
     public static final String HOST_OS = System.getProperty("os.name").toLowerCase();
@@ -10,22 +11,26 @@ public class Utils {
     public static final Font HEADER_FONT = new Font("Big Shoulders Text", Font.BOLD, 14);
     public static final Color BRAND_COLOR = new Color(99, 165, 38);
     public static final Color LIGHT_GREEN = new Color(179, 219, 143);
-
+    public static final Color BG_GRAY = new Color(0x333333);
+    public static final Color BG_DARK_GRAY = new Color(0x222222);
+    public static Level LOG_LEVEL = Level.INFO;
+    public static void setLogLevel(Level level) {
+        LOG_LEVEL = level;
+    }
     public static void setCommonBodyProperties(JComponent component) {
         component.setFont(BODY_FONT);
         component.setForeground(Color.WHITE);
-        component.setBackground(Color.BLACK);
+        component.setBackground(Utils.BG_DARK_GRAY);
         component.setBorder(BorderFactory.createEtchedBorder());
     }
 
     public static void setCommonBodyProperties(JButton button) {
         button.setFont(BODY_FONT);
         button.setForeground(Color.WHITE);
+        button.setBackground(Utils.BG_GRAY);
         if (Utils.HOST_OS.contains("windows")) {
             button.setBorderPainted(false);
-            button.setBackground(BRAND_COLOR);
         } else {
-            button.setBackground(Color.DARK_GRAY);
             button.setBorder(BorderFactory.createEtchedBorder());
         }
     }
@@ -67,15 +72,11 @@ public class Utils {
         progressBar.setPreferredSize(new Dimension(580, 30));
         progressBar.setFocusable(false);
         TitledBorder progressBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Progress", TitledBorder.LEFT, TitledBorder.TOP);
-        if (Utils.HOST_OS.contains("windows")) {
-            progressBorder.setTitleColor(Color.BLACK);
-        } else {
-            progressBorder.setTitleColor(Color.LIGHT_GRAY);
-        }
+        progressBorder.setTitleColor(Utils.BG_DARK_GRAY);
         progressBorder.setTitleFont(HEADER_FONT);
         progressBar.setBorder(progressBorder);
 
-        progressBar.setBackground(Color.DARK_GRAY);
+        progressBar.setBackground(Utils.BG_DARK_GRAY);
         progressBar.setForeground(Color.GREEN);
         progressBar.setValue(0);
         parent.add(progressBar);

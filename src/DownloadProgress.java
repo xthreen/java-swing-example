@@ -1,17 +1,9 @@
 public class DownloadProgress {
-    private String fileName;
-    private long totalBytesRead;
-    private long contentLength;
-    private int percent;
-    private double speed;
-
-    DownloadProgress() {
-        this.fileName = "";
-        this.totalBytesRead = 0;
-        this.contentLength = 0;
-        this.percent = 0;
-        this.speed = 0.0;
-    }
+    private String fileName = "";
+    private long totalBytesRead = 0;
+    private long contentLength = 0;
+    private int percent = 0;
+    private double speed = 0.0;
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
